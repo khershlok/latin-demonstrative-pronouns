@@ -56,3 +56,18 @@
   document.addEventListener('DOMContentLoaded',()=>{build();updateScore();
     const go=()=>{const h=location.hash.slice(1);const el=h&&document.getElementById(h);if(el)el.scrollIntoView();};go();window.addEventListener('hashchange',go);});
 })();
+
+// Arrow keys move between boxes: up/down in a column, left/right along a row (once the cursor is at the edge of the word).
+document.addEventListener('keydown',e=>{
+  const inp=e.target;if(!inp.matches||!inp.matches('#tables input')||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey)return;
+  const td=inp.parentElement,tr=td.parentElement,col=[...tr.children].indexOf(td);let to=null;
+  if(e.key==='ArrowUp'||e.key==='ArrowDown'){
+    const rows=[...tr.parentElement.children].filter(r=>r.querySelector('input'));
+    const r=rows[rows.indexOf(tr)+(e.key==='ArrowDown'?1:-1)];to=r&&r.children[col].querySelector('input');
+  }else if(e.key==='ArrowLeft'&&inp.selectionStart===0&&inp.selectionEnd===0){
+    const c=tr.children[col-1];to=c&&c.querySelector('input');
+  }else if(e.key==='ArrowRight'&&inp.selectionStart===inp.value.length&&inp.selectionEnd===inp.value.length){
+    const c=tr.children[col+1];to=c&&c.querySelector('input');
+  }
+  if(to){e.preventDefault();to.focus();to.select();}
+});
